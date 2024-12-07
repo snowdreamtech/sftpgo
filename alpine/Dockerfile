@@ -13,6 +13,8 @@ RUN apk -U upgrade --no-cache && apk add --update --no-cache bash ca-certificate
 RUN mkdir -p /workspace
 WORKDIR /workspace
 
+RUN apk -U upgrade --no-cache && apk add --update --no-cache alpine-sdk
+
 RUN set -eux \
     && wget -c https://github.com/drakkan/sftpgo/archive/refs/tags/v${SFTPGO_VERSION}.tar.gz -O sftpgo-${SFTPGO_VERSION}.tar.gz \
     && tar zxvf sftpgo-${SFTPGO_VERSION}.tar.gz \

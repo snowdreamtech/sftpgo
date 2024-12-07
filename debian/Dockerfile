@@ -13,6 +13,8 @@ RUN apt-get update && apt-get -y upgrade && rm -rf /var/lib/apt/lists/*
 RUN mkdir -p /workspace
 WORKDIR /workspace
 
+RUN apt-get update && apt-get -y upgrade && apt-get install --no-install-recommends -y build-essential && rm -rf /var/lib/apt/lists/*
+
 RUN set -eux \
     && wget -c https://github.com/drakkan/sftpgo/archive/refs/tags/v${SFTPGO_VERSION}.tar.gz -O sftpgo-${SFTPGO_VERSION}.tar.gz \
     && tar zxvf sftpgo-${SFTPGO_VERSION}.tar.gz \
