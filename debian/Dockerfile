@@ -18,6 +18,7 @@ RUN set -eux \
     && tar zxvf sftpgo-${SFTPGO_VERSION}.tar.gz \
     && cd sftpgo-${SFTPGO_VERSION} \
     && sed -i "s/^go\s*\([0-9]\+\.[0-9]\+\)\.[0-9]\+/go \1/" go.mod \
+    && go mod tidy \
     && go build $(if [ -n "${FEATURES}" ]; then echo "-tags ${FEATURES}"; fi) -trimpath -ldflags "-s -w -X github.com/drakkan/sftpgo/v2/internal/version.date=`date -u +%FT%TZ`" -v -o sftpgo 
 
 
