@@ -1,4 +1,4 @@
-FROM snowdreamtech/golang:1.19.8-bookworm AS builder
+FROM snowdreamtech/golang:1.23.3-bookworm AS builder
 
 ENV SFTPGO_VERSION=2.6.4 \
     GOFLAGS=""
