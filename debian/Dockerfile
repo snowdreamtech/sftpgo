@@ -1,7 +1,7 @@
 FROM snowdreamtech/golang:1.19.8-bookworm AS builder
 
 ENV SFTPGO_VERSION=2.6.4 \
-    GOFLAGS="-mod=readonly"
+    GOFLAGS=""
 
 # This ARG allows to disable some optional features and it might be useful if you build the image yourself.
 # For example you can disable S3 and GCS support like this:
