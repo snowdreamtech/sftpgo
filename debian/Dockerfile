@@ -15,11 +15,27 @@ WORKDIR /workspace
 
 RUN apt-get update && apt-get -y upgrade && apt-get install --no-install-recommends -y build-essential && rm -rf /var/lib/apt/lists/*
 
+COPY ./locales /workspace/locales
+
 RUN set -eux \
     && wget -c https://github.com/drakkan/sftpgo/archive/refs/tags/v${SFTPGO_VERSION}.tar.gz -O sftpgo-${SFTPGO_VERSION}.tar.gz \
     && tar zxvf sftpgo-${SFTPGO_VERSION}.tar.gz \
     && cd sftpgo-${SFTPGO_VERSION} \
-    && sed -i "s/^go\s*\([0-9]\+\.[0-9]\+\)\.[0-9]\+/go \1/" go.mod \
+    && cp -rfv /workspace/locales/ ./static/ \
+    # && sed -i "s/debug: *false,/debug: true,/g" ./templates/common/base.html \
+    && sed -i "s/supportedLngs:.*,/supportedLngs: Object.keys(lngs),/g" ./templates/common/base.html \
+    && sed -i "s/load: *'languageOnly',/load: 'all',/g" ./templates/common/base.html \
+    && sed -i '/const lngs = {/,/};/c\
+    const lngs = {\
+        '\''zh-CN'\'': { nativeName: '\''简体中文'\'' },\
+        en: { nativeName: '\''English'\'' },\
+        it: { nativeName: '\''Italiano'\'' },\
+        fr: { nativeName: '\''Français'\'' },\
+        ru: { nativeName: '\''Русский'\'' },\
+        uk: { nativeName: '\''Українська'\'' }\
+    };\
+' ./templates/common/base.html \
+    && sed -i "s/^go *\([0-9]\+\.[0-9]\+\)\.[0-9]\+/go \1/" go.mod \
     && go mod tidy \
     && go build $(if [ -n "${FEATURES}" ]; then echo "-tags ${FEATURES}"; fi) -trimpath -ldflags "-s -w -X github.com/drakkan/sftpgo/v2/internal/version.date=`date -u +%FT%TZ`" -v -o sftpgo 
 
