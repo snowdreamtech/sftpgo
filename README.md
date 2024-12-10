@@ -16,6 +16,8 @@ To help you get started creating a container from this image you can either use 
 docker run -d \
   --name=sftpgo \
   -e TZ=Asia/Shanghai \
+  -p 8080:8080 \
+  -p 2022:2022 \
   --restart unless-stopped \
   snowdreamtech/sftpgo:latest
 ```
@@ -26,7 +28,10 @@ docker run -d \
 docker run -d \
   --name=sftpgo \
   -e TZ=Asia/Shanghai \
-  -v /path/to/data:/path/to/data \
+  -p 8080:8080 \
+  -p 2022:2022 \
+  -v /path/to/data:/srv/sftpgo \
+  -v /path/to/config:/var/lib/sftpgo \
   --restart unless-stopped \
   snowdreamtech/sftpgo:latest
 ```
@@ -36,30 +41,33 @@ docker run -d \
 ### Simple
 
 ```bash
-version: "3"
-
 services:
   sftpgo:
     image: snowdreamtech/sftpgo:latest
     container_name: sftpgo
     environment:
       - TZ=Asia/Shanghai
+    ports:
+      - "8080:8080"
+      - "2022:2022"
     restart: unless-stopped
 ```
 
 ### Advance
 
 ```bash
-version: "3"
-
 services:
   sftpgo:
     image: snowdreamtech/sftpgo:latest
     container_name: sftpgo
     environment:
       - TZ=Asia/Shanghai
+    ports:
+      - "8080:8080"
+      - "2022:2022"
     volumes:
-      - /path/to/data:/path/to/data
+      - /path/to/data:/srv/sftpgo
+      - /path/to/config:/var/lib/sftpgo
     restart: unless-stopped
 ```
 
@@ -81,7 +89,7 @@ docker buildx build -t snowdreamtech/sftpgo --platform=linux/386,linux/amd64,lin
 
 ## Contact (备注：base)
 
-* Email: sn0wdr1am@qq.com
+* Email: <sn0wdr1am@qq.com>
 * QQ: 3217680847
 * QQ群: 949022145
 * WeChat/微信群: sn0wdr1am
