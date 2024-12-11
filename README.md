@@ -2,7 +2,7 @@
 
 [![SFTPGo](http://dockeri.co/image/snowdreamtech/sftpgo)](https://hub.docker.com/r/snowdreamtech/sftpgo)
 
-Docker Image packaging for SFTPGo. (amd64, arm32v5,  arm32v6, arm32v7, arm64v8, i386, mips64le, ppc64le,riscv64, s390x)
+Docker Image packaging for [drakkan/sftpgo](https://github.com/drakkan/sftpgo). (amd64, arm32v5,  arm32v6, arm32v7, arm64v8, i386, mips64le, ppc64le,riscv64, s390x)
 
 # Usage
 
