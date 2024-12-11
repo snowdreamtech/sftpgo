@@ -96,4 +96,4 @@ docker buildx build -t snowdreamtech/sftpgo --platform=linux/386,linux/amd64,lin
 
 ## License
 
-MIT
+AGPL-3.0 license
