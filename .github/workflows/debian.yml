@@ -80,7 +80,7 @@ jobs:
         # https://github.com/docker/buildx/issues/136#issuecomment-550205439
         # docker buildx create --driver-opt env.http_proxy=$http_proxy --driver-opt env.https_proxy=$https_proxy --driver-opt '"env.no_proxy='$no_proxy'"'
         name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3.7.1
+        uses: docker/setup-buildx-action@v3.8.0
         with:
           buildkitd-config: .github/buildkitd.toml
           driver-opts: |
@@ -145,7 +145,6 @@ jobs:
             BUILDTIME=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.created'] }}
             VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
             REVISION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.revision'] }}
-          # platforms: linux/386,linux/amd64
           platforms: linux/386,linux/amd64,linux/arm/v5,linux/arm/v7,linux/arm64,linux/mips64le,linux/ppc64le,linux/s390x
           push: ${{ github.event_name != 'pull_request' && !startsWith(github.ref, 'refs/heads/feat/') && !startsWith(github.ref, 'refs/heads/feature/') && !startsWith(github.ref, 'refs/heads/fix/') && !startsWith(github.ref, 'refs/heads/pr/') }}
           tags: ${{ steps.meta.outputs.tags }}

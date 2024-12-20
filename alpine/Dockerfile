@@ -41,7 +41,7 @@ RUN set -eux \
 
 
 
-FROM snowdreamtech/alpine:3.20.3
+FROM snowdreamtech/alpine:3.21.0
 
 # OCI annotations to image
 LABEL org.opencontainers.image.authors="Snowdream Tech" \
@@ -52,13 +52,18 @@ LABEL org.opencontainers.image.authors="Snowdream Tech" \
     org.opencontainers.image.licenses="MIT" \
     org.opencontainers.image.source="https://github.com/snowdreamtech/sftpgo" \
     org.opencontainers.image.vendor="Snowdream Tech" \
-    org.opencontainers.image.version="3.20.3" \
+    org.opencontainers.image.version="3.21.0" \
     org.opencontainers.image.url="https://github.com/snowdreamtech/sftpgo"
 
 # keep the docker container running
 ENV KEEPALIVE=1 \
     SFTPGO_VERSION=2.6.4
 
+ARG GID=1000 \
+    UID=1000  \
+    USER=sftpgo \
+    WORKDIR=/var/lib/sftpgo
+    
 # Set to "true" to install jq and the optional git and rsync dependencies
 ARG INSTALL_OPTIONAL_PACKAGES=false
 
@@ -67,10 +72,14 @@ RUN apk -U upgrade --no-cache && apk add --update --no-cache ca-certificates tzd
 RUN if [ "${INSTALL_OPTIONAL_PACKAGES}" = "true" ]; then apk add --update --no-cache jq git rsync; fi
 
 RUN mkdir -p /etc/sftpgo /var/lib/sftpgo /usr/share/sftpgo /srv/sftpgo/data /srv/sftpgo/backups
-
-RUN addgroup -g 1000 -S sftpgo && \
-    adduser -u 1000 -h /var/lib/sftpgo -s /sbin/nologin -G sftpgo -S -D -H -g "SFTPGo user" sftpgo
-
+    
+# Create a user with UID and GID
+RUN if [ "${USER}" != "root" ]; then \
+    addgroup -g ${GID} -S ${USER}; \
+    adduser -h /var/lib/${USER} -u ${UID} -g ${USER} -G ${USER} -s /sbin/nologin -S -D -H ${USER}; \
+    # sed -i "/%sudo/c ${USER} ALL=(ALL:ALL) NOPASSWD:ALL" /etc/sudoers; \
+    fi
+    
 COPY --from=builder /workspace/sftpgo-${SFTPGO_VERSION}/sftpgo.json /etc/sftpgo/sftpgo.json
 COPY --from=builder /workspace/sftpgo-${SFTPGO_VERSION}/templates /usr/share/sftpgo/templates
 COPY --from=builder /workspace/sftpgo-${SFTPGO_VERSION}/static /usr/share/sftpgo/static
@@ -86,8 +95,11 @@ RUN sed -i 's|"users_base_dir": "",|"users_base_dir": "/srv/sftpgo/data",|' /etc
 
 RUN chown -R sftpgo:sftpgo /etc/sftpgo /srv/sftpgo && chown sftpgo:sftpgo /var/lib/sftpgo && chmod 700 /srv/sftpgo/backups
 
-WORKDIR /var/lib/sftpgo
-USER 1000:1000
+# Switch to the user
+USER ${USER}
+
+# Set the workdir
+WORKDIR ${WORKDIR}
 
 COPY docker-entrypoint.sh /usr/local/bin/
 
