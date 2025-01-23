@@ -1,5 +1,11 @@
 FROM snowdreamtech/golang:1.23.3-bookworm AS builder
 
+# Switch to the user
+USER root
+
+# Set the workdir
+WORKDIR /root
+
 ENV SFTPGO_VERSION=2.6.4 \
     GOFLAGS=""
 
@@ -10,18 +16,15 @@ ENV SFTPGO_VERSION=2.6.4 \
 
 RUN apt-get update && apt-get -y upgrade && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p /workspace
-WORKDIR /workspace
-
 RUN apt-get update && apt-get -y upgrade && apt-get install --no-install-recommends -y build-essential && rm -rf /var/lib/apt/lists/*
 
-COPY ./locales /workspace/locales
+COPY ./locales /root/locales
 
 RUN set -eux \
     && wget -c https://github.com/drakkan/sftpgo/archive/refs/tags/v${SFTPGO_VERSION}.tar.gz -O sftpgo-${SFTPGO_VERSION}.tar.gz \
     && tar zxvf sftpgo-${SFTPGO_VERSION}.tar.gz \
     && cd sftpgo-${SFTPGO_VERSION} \
-    && cp -rfv /workspace/locales/ ./static/ \
+    && cp -rfv /root/locales/ ./static/ \
     # && sed -i "s/debug: *false,/debug: true,/g" ./templates/common/base.html \
     && sed -i "s/supportedLngs:.*,/supportedLngs: Object.keys(lngs),/g" ./templates/common/base.html \
     && sed -i "s/load: *'languageOnly',/load: 'all',/g" ./templates/common/base.html \
@@ -86,11 +89,11 @@ RUN set -eux \
     && rm -rf /tmp/* \
     && rm -rf /var/tmp/* 
     
-COPY --from=builder /workspace/sftpgo-${SFTPGO_VERSION}/sftpgo.json /etc/sftpgo/sftpgo.json
-COPY --from=builder /workspace/sftpgo-${SFTPGO_VERSION}/templates /usr/share/sftpgo/templates
-COPY --from=builder /workspace/sftpgo-${SFTPGO_VERSION}/static /usr/share/sftpgo/static
-COPY --from=builder /workspace/sftpgo-${SFTPGO_VERSION}/openapi /usr/share/sftpgo/openapi
-COPY --from=builder /workspace/sftpgo-${SFTPGO_VERSION}/sftpgo /usr/local/bin/sftpgo-plugin-* /usr/local/bin/
+COPY --from=builder /root/sftpgo-${SFTPGO_VERSION}/sftpgo.json /etc/sftpgo/sftpgo.json
+COPY --from=builder /root/sftpgo-${SFTPGO_VERSION}/templates /usr/share/sftpgo/templates
+COPY --from=builder /root/sftpgo-${SFTPGO_VERSION}/static /usr/share/sftpgo/static
+COPY --from=builder /root/sftpgo-${SFTPGO_VERSION}/openapi /usr/share/sftpgo/openapi
+COPY --from=builder /root/sftpgo-${SFTPGO_VERSION}/sftpgo /usr/local/bin/sftpgo-plugin-* /usr/local/bin/
 
 # Log to the stdout so the logs will be available using docker logs
 ENV SFTPGO_LOG_FILE_PATH=""
