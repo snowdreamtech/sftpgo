@@ -6,7 +6,7 @@ USER root
 # Set the workdir
 WORKDIR /root
 
-ENV SFTPGO_VERSION=2.6.4 \
+ENV SFTPGO_VERSION=2.6.5 \
     GOFLAGS=""
 
 # This ARG allows to disable some optional features and it might be useful if you build the image yourself.
@@ -60,7 +60,7 @@ LABEL org.opencontainers.image.authors="Snowdream Tech" \
 
 # keep the docker container running
 ENV KEEPALIVE=1 \
-    SFTPGO_VERSION=2.6.4
+    SFTPGO_VERSION=2.6.5
 
 ARG GID=1000 \
     UID=1000  \
