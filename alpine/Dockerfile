@@ -99,7 +99,8 @@ RUN sed -i 's|"users_base_dir": "",|"users_base_dir": "/srv/sftpgo/data",|' /etc
 RUN chown -R sftpgo:sftpgo /etc/sftpgo /srv/sftpgo && chown sftpgo:sftpgo /var/lib/sftpgo && chmod 700 /srv/sftpgo/backups
 
 # Switch to the user
-USER ${USER}
+# USER ${USER}
+USER root
 
 # Set the workdir
 WORKDIR ${WORKDIR}
